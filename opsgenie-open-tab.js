@@ -10,18 +10,21 @@
 (function() {
     'use strict';
 
-    var inited = -1, $ = jQuery;
+    var $ = jQuery;
 
     // bind all incident items to open new tab on ctrl+click or middle mouse button
     function bindItemsToMMB() {
         var items = $('.ops-alert-list-item');
         if (items.length === 0) return;
-        if (items.length === inited) return;
-        if (inited == -1) console.log("Init MMB for", items.length, "items");
 
-        inited = items.length;
-        items.not('[data-with-monkeypatch]').each(function() {
-            $(this).data('with-mmb-monkeypatch', true);
+        var found = 0;
+        items.not('.x-mmb-monkeypatch-applied').each(function() {
+            if ($(this).hasClass('x-mmb-monkeypatch-applied')) {
+                console.log("Bad apple");
+                return;
+            }
+            found++;
+            $(this).addClass('x-mmb-monkeypatch-applied');
             $(this).on('mousedown', function(ev) {
                 if (ev.ctrlKey && ev.button === 0 || ev.button == 1) {
                     var counter = $(this).find('.item-counter');
@@ -32,6 +35,7 @@
                 }
             });
         });
+        if (found) console.log("Applied MMB patch to", found, "items");
     }
 
     // tech so far solid, intercom button just annoys
@@ -39,8 +43,8 @@
         $('#intercom-container-body,#intercom-container').remove();
     }
 
-    console.log("Loading MMB");
-    setInterval(bindItemsToMMB, 500);
+    console.log("Loading MMB patch");
+    setInterval(bindItemsToMMB, 1000);
     setInterval(clearIntercom, 1000);
 
     // Your code here...
