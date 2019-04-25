@@ -3,7 +3,7 @@
 // @version      0.1
 // @description  Revert the UI fail of using JS instead of native A tags, which disables ctrl+click and midle mouse button to open new tabs
 // @author       Me
-// @match        https://app.opsgenie.com/alert*
+// @match        https://*.app.opsgenie.com/alert*
 // @grant        none
 // ==/UserScript==
 
@@ -15,7 +15,7 @@
 
     // bind all incident items to open new tab on ctrl+click or middle mouse button
     function bindItemsToMMB() {
-        var items = $('.ops-alert-list-item');
+        var items = $('.og-alert-item');
         if (items.length === 0) return;
 
         var found = 0;
@@ -27,16 +27,9 @@
             found++;
             $(this).addClass('x-mmb-monkeypatch-applied');
             $(this).on('mousedown', function(ev) {
-                if (ev.ctrlKey && ev.button === 0 || ev.button == 1) {
-                    var counter = $(this).find('.item-counter');
-                    var id = $.trim(counter.text()).replace(/[^0-9]/, '');
-                    var url = 'https://opsg.in/i/'+ id;
-                    if (ev.shiftKey) {
-                        alert(url);
-                    } else {
-                        window.open(url, '_blank');
-                    }
-                    return false;
+                if ((ev.ctrlKey && ev.button === 0) || ev.button == 1) {
+                    window.open($(this).attr('href'));
+
                 }
             });
         });
@@ -45,14 +38,16 @@
 
     // tech so far solid, intercom button just annoys
     function clearIntercom() {
-        $('#intercom-container, #intercom-frame').remove();
+        $('.intercom-app').remove();
+    }
+
+    function run() {
+        clearIntercom();
+        bindItemsToMMB();
     }
 
     console.log("Loading MMB patch");
-    for (var i = 1; i <= 10; i++) {
-        setTimeout(clearIntercom, 100 * i);
-    }
-    setInterval(bindItemsToMMB, 1000);
+    setInterval(run, 1000);
 
     // Your code here...
 })();
